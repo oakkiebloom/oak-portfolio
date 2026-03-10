@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jakapob Aekpitakkul (Oak) — Finance & Strategy</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080A0E;
+    --dark: #0D1117;
+    --card: #111720;
+    --border: #1E2A3A;
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --gold-dim: rgba(201,168,76,0.15);
+    --blue: #2A6EDB;
+    --blue-dim: rgba(42,110,219,0.12);
+    --text: #E8EDF5;
+    --muted: #7A8A9E;
+    --accent: #FF6B35;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.1s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,168,76,0.5);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transition: transform 0.15s ease, width 0.2s, height 0.2s;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1; opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 20px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(to bottom, rgba(8,10,14,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(10px);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; letter-spacing: 0.1em;
+    color: var(--gold);
+  }
+  .nav-links { display: flex; gap: 36px; }
+  .nav-links a {
+    font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; padding: 120px 60px 60px;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(201,168,76,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 20% 30%, rgba(42,110,219,0.05) 0%, transparent 50%);
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(30,42,58,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,42,58,0.3) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 1100px; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+
+  .hero-tag {
+    font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-tag::before {
+    content: ''; width: 32px; height: 1px; background: var(--gold);
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 6vw, 5.5rem);
+    font-weight: 900; line-height: 0.95;
+    color: var(--text);
+  }
+  .hero-name em {
+    font-style: italic; color: var(--gold);
+    display: block;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem; font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--muted);
+    margin-top: 20px;
+  }
+
+  .hero-desc {
+    margin-top: 28px;
+    font-size: 0.8rem; line-height: 1.9; color: var(--muted);
+    max-width: 400px;
+  }
+
+  .hero-cta {
+    margin-top: 40px; display: flex; gap: 16px;
+  }
+  .btn-primary {
+    padding: 14px 28px;
+    background: var(--gold);
+    color: var(--black);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em;
+    text-transform: uppercase; text-decoration: none;
+    transition: all 0.3s; border: none; cursor: none;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  .btn-outline {
+    padding: 14px 28px;
+    background: transparent;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em;
+    text-transform: uppercase; text-decoration: none;
+    border: 1px solid var(--border);
+    transition: all 0.3s; cursor: none;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+
+  /* STATS PANEL */
+  .hero-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    position: relative;
+  }
+  .hero-stats::before {
+    content: '';
+    position: absolute; inset: -20px;
+    border: 1px solid var(--border);
+    pointer-events: none;
+  }
+
+  .stat-card {
+    background: var(--card);
+    padding: 32px 24px;
+    position: relative; overflow: hidden;
+    transition: background 0.3s;
+  }
+  .stat-card:hover { background: #161F2E; }
+  .stat-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: var(--gold);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .stat-card:hover::after { transform: scaleX(1); }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem; font-weight: 700;
+    color: var(--gold); line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-top: 8px;
+  }
+
+  /* SECTION BASE */
+  section { padding: 100px 60px; position: relative; }
+  .section-header {
+    display: flex; align-items: center; gap: 20px;
+    margin-bottom: 60px;
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; color: var(--gold);
+    letter-spacing: 0.2em;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem; font-weight: 700;
+    color: var(--text);
+  }
+  .section-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(to right, var(--border) 0%, transparent 100%);
+  }
+
+  /* EXPERIENCE TIMELINE */
+  #experience { background: var(--dark); }
+
+  .timeline {
+    position: relative; max-width: 900px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+
+  .timeline-item {
+    padding-left: 40px; margin-bottom: 56px; position: relative;
+    opacity: 0; transform: translateY(30px);
+    transition: all 0.6s ease;
+  }
+  .timeline-item.visible { opacity: 1; transform: translateY(0); }
+
+  .timeline-dot {
+    position: absolute; left: -5px; top: 6px;
+    width: 10px; height: 10px;
+    background: var(--gold);
+    border: 2px solid var(--black);
+    border-radius: 50%;
+  }
+
+  .timeline-date {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 8px;
+  }
+
+  .timeline-role {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem; font-weight: 700;
+    color: var(--text);
+  }
+
+  .timeline-org {
+    font-size: 0.75rem; color: var(--muted);
+    margin-top: 4px; margin-bottom: 16px;
+  }
+
+  .timeline-bullets { list-style: none; }
+  .timeline-bullets li {
+    font-size: 0.78rem; line-height: 1.8; color: var(--muted);
+    padding-left: 16px; position: relative; margin-bottom: 6px;
+  }
+  .timeline-bullets li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--gold); font-size: 0.7rem;
+  }
+  .timeline-bullets strong { color: var(--text); font-weight: 500; }
+
+  /* SKILLS */
+  #skills { background: var(--black); }
+
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  }
+
+  .skill-block {
+    background: var(--card); padding: 40px 32px;
+    position: relative; overflow: hidden;
+    transition: all 0.3s;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease, background 0.3s;
+  }
+  .skill-block.visible { opacity: 1; transform: translateY(0); }
+  .skill-block:hover { background: #161F2E; }
+
+  .skill-icon {
+    font-size: 1.6rem; margin-bottom: 20px;
+    display: block;
+  }
+
+  .skill-category {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .skill-tag {
+    padding: 6px 14px;
+    background: var(--blue-dim);
+    border: 1px solid rgba(42,110,219,0.2);
+    font-size: 0.65rem; letter-spacing: 0.1em;
+    color: var(--text); text-transform: uppercase;
+  }
+
+  /* LEADERSHIP */
+  #leadership { background: var(--dark); }
+
+  .leadership-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px;
+  }
+
+  .lead-card {
+    background: var(--card); padding: 40px 36px;
+    position: relative; overflow: hidden;
+    transition: all 0.3s;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease, background 0.3s;
+  }
+  .lead-card.visible { opacity: 1; transform: translateY(0); }
+  .lead-card:hover { background: #161F2E; }
+
+  .lead-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);
+  }
+
+  .lead-date {
+    font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 12px;
+  }
+  .lead-role {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem; font-weight: 700; color: var(--text);
+    margin-bottom: 6px;
+  }
+  .lead-org {
+    font-size: 0.72rem; color: var(--muted); margin-bottom: 20px;
+  }
+  .lead-bullets { list-style: none; }
+  .lead-bullets li {
+    font-size: 0.74rem; line-height: 1.7; color: var(--muted);
+    padding-left: 14px; position: relative; margin-bottom: 6px;
+  }
+  .lead-bullets li::before {
+    content: '◆'; position: absolute; left: 0;
+    color: var(--gold); font-size: 0.45rem; top: 5px;
+  }
+
+  /* METRICS BAR */
+  #metrics {
+    background: var(--black);
+    padding: 80px 60px;
+    overflow: hidden;
+  }
+  .metrics-row {
+    display: flex; gap: 2px;
+    flex-wrap: wrap;
+  }
+  .metric-pill {
+    flex: 1; min-width: 200px;
+    background: var(--card); padding: 36px 28px;
+    text-align: center;
+    transition: background 0.3s;
+    opacity: 0; transform: scale(0.95);
+    transition: opacity 0.5s ease, transform 0.5s ease, background 0.3s;
+  }
+  .metric-pill.visible { opacity: 1; transform: scale(1); }
+  .metric-pill:hover { background: #161F2E; }
+  .metric-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem; font-weight: 700;
+    color: var(--gold);
+  }
+  .metric-sub {
+    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-top: 8px;
+  }
+
+  /* CONTACT */
+  #contact {
+    background: var(--dark); padding: 100px 60px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  #contact::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 50% 60% at 50% 100%, rgba(201,168,76,0.08) 0%, transparent 70%);
+  }
+  .contact-inner { position: relative; z-index: 2; }
+  .contact-label {
+    font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+  }
+  .contact-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900;
+    color: var(--text); margin-bottom: 40px;
+  }
+  .contact-links {
+    display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;
+  }
+  .contact-link {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    text-decoration: none; color: var(--muted);
+    font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .contact-link:hover { color: var(--gold); }
+  .contact-link span:first-child { font-size: 1.4rem; }
+
+  /* FOOTER */
+  footer {
+    background: var(--black); padding: 30px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--border);
+  }
+  footer p { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; }
+
+  /* SCROLL INDICATOR */
+  .scroll-progress {
+    position: fixed; top: 0; left: 0;
+    height: 2px; background: var(--gold);
+    z-index: 200; transition: width 0.1s linear;
+  }
+
+  /* FLOATING LABEL */
+  .available-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 8px 16px; margin-bottom: 24px;
+    font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold);
+  }
+  .badge-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 70px 24px; }
+    #hero { padding: 100px 24px 60px; }
+    .hero-content { grid-template-columns: 1fr; gap: 50px; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .leadership-grid { grid-template-columns: 1fr; }
+    .hero-stats { grid-template-columns: 1fr 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+
+  /* ANIMATE IN */
+  .fade-up {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">OAK.</div>
+  <div class="nav-links">
+    <a href="#experience">Experience</a>
+    <a href="#metrics">Impact</a>
+    <a href="#skills">Skills</a>
+    <a href="#leadership">Leadership</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="fade-up" style="transition-delay:0.1s">
+      <div class="available-badge">
+        <span class="badge-dot"></span>
+        Open to Opportunities · 2026
+      </div>
+      <div class="hero-tag">Finance & Strategy Professional</div>
+      <h1 class="hero-name">
+        Jakapob<br>
+        <em>Aekpitakkul</em>
+      </h1>
+      <div class="hero-title">Banking & Finance · Chulalongkorn University</div>
+      <p class="hero-desc">
+        A data-driven strategist who turns numbers into decisions and teams into machines. From generating ฿2M in revenue to managing budgets that span nationwide programs — Oak builds what matters.
+      </p>
+      <div class="hero-cta">
+        <a href="#experience" class="btn-primary">View Experience</a>
+        <a href="#contact" class="btn-outline">Get in Touch</a>
+      </div>
+    </div>
+    <div class="hero-stats fade-up" style="transition-delay:0.4s">
+      <div class="stat-card">
+        <div class="stat-num">฿2M</div>
+        <div class="stat-label">Revenue Generated</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">11</div>
+        <div class="stat-label">Sales Team Led</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">50%</div>
+        <div class="stat-label">Budget Reduction</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">800+</div>
+        <div class="stat-label">Students Served</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METRICS IMPACT -->
+<div id="metrics">
+  <div class="metrics-row">
+    <div class="metric-pill">
+      <div class="metric-big">฿200K+</div>
+      <div class="metric-sub">TEDx Budget Managed</div>
+    </div>
+    <div class="metric-pill">
+      <div class="metric-big">4</div>
+      <div class="metric-sub">Organizations Led</div>
+    </div>
+    <div class="metric-pill">
+      <div class="metric-big">120+</div>
+      <div class="metric-sub">Dept. Students Overseen</div>
+    </div>
+    <div class="metric-pill">
+      <div class="metric-big">฿100K</div>
+      <div class="metric-sub">Events Budget Managed</div>
+    </div>
+    <div class="metric-pill">
+      <div class="metric-big">Nationwide</div>
+      <div class="metric-sub">Playbook Deployed — Krungthai</div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Experience</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">June 2025 – July 2025</div>
+      <div class="timeline-role">Wealth Segment Project Associate</div>
+      <div class="timeline-org">Krungthai Bank</div>
+      <ul class="timeline-bullets">
+        <li>Led a 4-member team to create the <strong>"Financial Planning Playbook"</strong> — now utilized <strong>nationwide</strong> by Krungthai financial planners</li>
+        <li>Conducted <strong>market research & competitive analysis</strong> on mutual funds and insurance products to generate strategic repositioning recommendations</li>
+        <li>Collaborated cross-functionally across product, marketing, and wealth management to strengthen wealth segment offerings</li>
+      </ul>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">Mar 2024 – Aug 2024</div>
+      <div class="timeline-role">Category Executive</div>
+      <div class="timeline-org">Chulalongkorn Business Administration</div>
+      <ul class="timeline-bullets">
+        <li>Generated <strong>฿2,000,000 in revenue with a 5% margin</strong> within 2 months via data-driven pricing and sales strategy</li>
+        <li>Managed and led a team of <strong>11 sales professionals</strong>, setting KPIs and optimizing operational performance</li>
+        <li>Performed <strong>financial analysis and ROI assessment</strong> on marketing campaigns with actionable recommendations to senior management</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Skills</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-block">
+      <span class="skill-icon">📊</span>
+      <div class="skill-category">Technical</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Excel</span>
+        <span class="skill-tag">Financial Modeling</span>
+        <span class="skill-tag">Pivot Table</span>
+        <span class="skill-tag">ROI Analysis</span>
+        <span class="skill-tag">Canva</span>
+        <span class="skill-tag">Social Media</span>
+      </div>
+    </div>
+    <div class="skill-block">
+      <span class="skill-icon">🎯</span>
+      <div class="skill-category">Strategic</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Market Analysis</span>
+        <span class="skill-tag">Competitive Analysis</span>
+        <span class="skill-tag">Financial Budgeting</span>
+        <span class="skill-tag">Pricing Strategy</span>
+        <span class="skill-tag">KPI Setting</span>
+      </div>
+    </div>
+    <div class="skill-block">
+      <span class="skill-icon">🗣️</span>
+      <div class="skill-category">Soft Skills</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Stakeholder Communication</span>
+        <span class="skill-tag">Presentation</span>
+        <span class="skill-tag">Team Leadership</span>
+        <span class="skill-tag">Cross-Functional</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
+    <div style="background:var(--card); padding:20px 32px; display:inline-flex; align-items:center; gap:16px;">
+      <span style="font-size:1.1rem;">🇹🇭</span>
+      <span style="font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.1em; color:var(--text);">Thai — Native</span>
+    </div>
+    <div style="background:var(--card); padding:20px 32px; display:inline-flex; align-items:center; gap:16px;">
+      <span style="font-size:1.1rem;">🇬🇧</span>
+      <span style="font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.1em; color:var(--text);">English — Advanced</span>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERSHIP -->
+<section id="leadership">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Leadership</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="leadership-grid">
+    <div class="lead-card">
+      <div class="lead-date">June 2024 – Present</div>
+      <div class="lead-role">President of Senior Class</div>
+      <div class="lead-org">Chulalongkorn Business School</div>
+      <ul class="lead-bullets">
+        <li>Led a 7-member student leadership team executing large-scale events and initiatives</li>
+        <li>Optimized project budgets, reducing costs by <strong>50%</strong> through resource reallocation</li>
+        <li>Served as liaison between faculty, student council, and 800+ students</li>
+      </ul>
+    </div>
+    <div class="lead-card">
+      <div class="lead-date">July 2024 – Present</div>
+      <div class="lead-role">Head of Banking & Finance Department</div>
+      <div class="lead-org">Chulalongkorn Business School</div>
+      <ul class="lead-bullets">
+        <li>Oversaw departmental news and activities for <strong>120+ students</strong></li>
+        <li>Managed a total budget of <strong>฿100,000</strong> for student projects and events</li>
+        <li>Served as trusted point of contact for faculty and students on financial matters</li>
+      </ul>
+    </div>
+    <div class="lead-card">
+      <div class="lead-date">Dec 2024 – July 2025</div>
+      <div class="lead-role">Finance Manager</div>
+      <div class="lead-org">TEDxChulalongkorn University</div>
+      <ul class="lead-bullets">
+        <li>Oversaw and audited financial operations across multiple departments</li>
+        <li>Managed total budget exceeding <strong>฿200,000</strong> to maximize event impact</li>
+        <li>Developed pricing strategies and profit forecasts ensuring financial sustainability</li>
+      </ul>
+    </div>
+    <div class="lead-card" style="background: var(--gold-dim); border: 1px solid rgba(201,168,76,0.2);">
+      <div style="font-family:'Playfair Display',serif; font-size:1.3rem; font-style:italic; color:var(--gold); margin-bottom:16px; line-height:1.4;">
+        "A strategist at heart.<br>A leader by action."
+      </div>
+      <p style="font-size:0.75rem; line-height:1.8; color:var(--muted);">
+        From leading 11-person sales teams to managing budgets deployed nationwide — Oak brings both the rigor of finance and the instincts of a people-first leader to every role.
+      </p>
+      <div style="margin-top:24px;">
+        <div style="font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold);">Education</div>
+        <div style="font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; margin-top:8px; color:var(--text);">BBA — Banking & Finance</div>
+        <div style="font-size:0.72rem; color:var(--muted); margin-top:4px;">Chulalongkorn University · Aug 2022 – May 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner fade-up">
+    <div class="contact-label">Let's Connect</div>
+    <h2 class="contact-title">Ready to build<br><em style="font-style:italic; color:var(--gold);">something great?</em></h2>
+    <div class="contact-links">
+      <a href="mailto:jakapob.oak@gmail.com" class="contact-link">
+        <span>✉️</span>
+        <span>jakapob.oak@gmail.com</span>
+      </a>
+      <a href="tel:+66869806360" class="contact-link">
+        <span>📱</span>
+        <span>086-980-6360</span>
+      </a>
+      <a href="https://www.linkedin.com/in/jakapob-aekpitakkul" target="_blank" class="contact-link">
+        <span>💼</span>
+        <span>LinkedIn Profile</span>
+      </a>
+      <a href="#" class="contact-link">
+        <span>📍</span>
+        <span>Bangkok, Thailand</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Jakapob Aekpitakkul (Oak) — All Rights Reserved</p>
+  <p style="color:var(--gold);">Finance · Strategy · Leadership</p>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.style.transform = `translate(${mouseX - 6}px, ${mouseY - 6}px)`;
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX - 18) * 0.12;
+    ringY += (mouseY - ringY - 18) * 0.12;
+    cursorRing.style.transform = `translate(${ringX}px, ${ringY}px)`;
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button, .stat-card, .skill-block, .lead-card, .metric-pill').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursorRing.style.width = '60px';
+      cursorRing.style.height = '60px';
+      cursorRing.style.borderColor = 'rgba(201,168,76,0.8)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursorRing.style.width = '36px';
+      cursorRing.style.height = '36px';
+      cursorRing.style.borderColor = 'rgba(201,168,76,0.5)';
+    });
+  });
+
+  // Scroll progress
+  const scrollProgress = document.getElementById('scrollProgress');
+  window.addEventListener('scroll', () => {
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = (window.scrollY / total) * 100;
+    scrollProgress.style.width = pct + '%';
+  });
+
+  // Intersection Observer for animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up, .timeline-item, .skill-block, .lead-card, .metric-pill').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Stagger delays
+  document.querySelectorAll('.skill-block').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.1}s`;
+  });
+  document.querySelectorAll('.lead-card').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.1}s`;
+  });
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.15}s`;
+  });
+  document.querySelectorAll('.metric-pill').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.08}s`;
+  });
+
+  // Counter animation
+  function animateCounter(el) {
+    const text = el.textContent;
+    const num = parseFloat(text.replace(/[^0-9.]/g, ''));
+    if (isNaN(num)) return;
+    const prefix = text.match(/^[฿]/) ? '฿' : '';
+    const suffix = text.replace(/^[฿]/, '').replace(/[0-9.]+/, '');
+    let start = 0;
+    const duration = 1500;
+    const step = (timestamp) => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = eased * num;
+      el.textContent = prefix + (Number.isInteger(num) ? Math.floor(current) : current.toFixed(1)) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const nums = entry.target.querySelectorAll('.stat-num, .metric-big');
+        nums.forEach(animateCounter);
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('#hero .hero-stats, #metrics').forEach(el => {
+    counterObserver.observe(el);
+  });
+</script>
+</body>
+</html>
